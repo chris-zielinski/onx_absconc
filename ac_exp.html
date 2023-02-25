@@ -1,0 +1,298 @@
+<!doctype html>
+<!-- Abstrait / Concret word rating --
+
+**/
+--> 
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Abstrait--Concret</title>
+
+		<link rel="shortcut icon" href="img/layout/favicon.ico">
+		<script src="js/jquery.js"></script>
+		<!-- ajaxqueue used for lucky draw (to process lucky draw after saving the jspsych data with ajax) -->
+		<script src="js/ajaxqueue.js"></script>
+		
+		<!-- polyfill hold javascript functions that could be missing to older browsers -->
+		<script crossorigin="anonymous"  src="https://polyfill.io/v3/polyfill.min.js?features=Object.assign%2CArray.prototype.reduce%2CArray.isArray%2CArray.prototype.indexOf%2CObject.keys"></script>
+
+		<!-- tool to get OS/browser informations 
+		Work only when experiment is online (on a server)
+		Add the path of the WhichBrowser library inside the whichbro.js file -->
+		<script src="js/whichbro.js" defer></script> 
+		<!-- plugin for dispalying final survey -->
+		<script src="js/nouislider.min.js"></script>			
+		<!-- jsPsych core & plugings + CSS -->		
+		<script src="lib/jspsych/jspsych.js"></script>
+		
+		<script src="lib/jspsych/jspsych_addons.js"></script> 
+		<!-- plugin for instruction screens -->
+		<script src="lib/jspsych/plugins/jspsych-text.js"></script>
+		<!-- very special plugin for edge browser (ask to maximized windows) -->
+		<script src="lib/jspsych/plugins/jspsych-resize.js"></script>
+		<!-- plugin for dispalying final survey -->
+		<script src="lib/jspsych/plugins/jspsych-form.js"></script>
+		<!-- plugin for dispalying final survey -->
+		<script src="lib/jspsych/plugins/jspsych-likert-rating.js"></script>		
+		<script src="lib/jspsych/plugins/jspsych-likert-rating-instr.js"></script>	
+		<link href="lib/jspsych/css/jspsych.css" rel="stylesheet" type="text/css" />
+		
+		<link href="css/nouislider.css" rel="stylesheet" type="text/css" />
+		<!-- script to define stimuli + the complexe form for the last block -->
+		<script src="js/stim.js"></script>
+	</head>
+	
+	<body>
+	
+	</body>
+
+	<script>
+		/** -----------
+		* Very Important Parameters */
+		
+		var isdemo =  false; 
+		// In demo mode (isdemo = true), data are not saved in mySQL database but are shown as
+		// json jspsych data at the end of the experiment
+		var alldata;
+		/** -----------*/
+		/** DEFINITION OF STIMULI */
+
+		var allstim = define_stimuli();
+		// {word: word_random, check_point: check_stim};
+		var slider_opt = {
+			start: 0,
+			step: 1,
+			range: {min: -100,
+					max: 100},
+			pips : {
+				mode: 'values',
+				values: [-100, -50, 0, 50, 100],
+				density: 5
+			},
+			ticklabel: { 
+					values: [-100, 0, 100], 
+					labels: ["<p>Maximum</p><p>abstrait</p>", "<p>Autant abstrait</p><p>que concret</p>", "<p>Maximum </p><p>concret</p>"],
+					rm_other: true
+			}
+		};
+		
+		// Crop the stim if demo mode - keep only 2 stim per block
+		if (isdemo){
+			allstim.word = allstim.word.slice(0, 5);
+		}
+		var thr_null_max = 40;
+		
+		/** Define ALL BLOCKS *
+		**********************/
+		
+		/** WELCOME block message*/
+		
+		// Check if full size
+		
+		// Conditional block if not in full screen (cf. Edge)
+		function is_not_fullwindow(){
+			if (window.outerWidth < screen.width-100){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+		var welcome_block = {
+			chunk_type : 'if',
+			timeline: [{type: 'text',
+					text: "<p class='large'>Bienvenue dans l'expérience !</p>" +
+						"<p>Veuillez ne pas redimensionner la fenêtre.</p><p>Cliquez n'importe où pour commencer...</p>",
+					end_type: 'mouse'}],
+			conditional_function: function(){
+			return (!is_not_fullwindow());
+			}
+		};
+		
+		var resize_block = { 
+			chunk_type: 'if',
+			timeline: [{type: 'resize',
+					text: "<p class='large'>Bienvenue dans l'expérience !</p>" +
+						"Merci de mettre cette fenêtre en plein écran (bouton du milieu en haut à droite) avant de commencer."
+					}],
+			conditional_function: function(){
+				return is_not_fullwindow();
+			}
+		};
+		
+		var intro_a = {
+			type: 'likert-rating-instr',
+			stimuli: "<div class='instr'><p id='instr-title'>Instructions</p>" +
+					"<p>Vous allez voir une série de mots. Votre but sera de juger, pour chaque mot, du caractère concret ou abstrait du mot, en déplaçant un curseur sur une échelle comme celle-ci : </p></div>" ,
+			slider: slider_opt,
+			button: 'Continuer'
+		};
+
+		var intro_b = {
+			type: 'text',
+			text: "<div class='instr' style='font-size: 18px'>" +
+					"<p>Les <b>mots concrets</b> sont les objets possibles à imaginer sans description, spatialement et physiquement perceptibles (ex. table, chambre, football), alors que les <b>mots abstraits</b> sont impossibles à imaginer comme des objets réels, non-perceptibles spatialement et physiquement composés d’information sociale ou liée à un événement (ex. bravoure, accomplissement, académie, année).</p>"+
+					"<p>En déplaçant le curseur vous déterminez le niveau d’abstractivité d’un mot, en sachant que le bord gauche signifie que le mot est très abstrait et le bord droit signifie que le mot est très concret.</p><p>Vous pouvez utiliser le slider pour indiquer de quel côté vous semble plus proche le mot dans des cas moins évidents, mais <b>veillez à éviter de placer souvent le curseur pile au milieu</b>.</p><p><b>Donnez la réponse sans trop réfléchir, en vous appuyant sur vos propres sensations et sans utilisation de dictionnaire.</b></p></div>",
+			end_type: 'button',
+			button_string: 'Commencer !'
+		};	
+	
+		/** Abstract/concrete rating task */
+		/*
+		var test_block = {
+			type: "likert-rating",
+			stimuli: filler_random,
+			slider : slider_opt,
+			button: 'Valider',
+			timing_interstim: 0
+		};	
+		var end_practice = {
+			type: 'text',
+			text: "<p class='feedback'>Bien ! Appuyer sur Continuer pour voir l'ensemble des mots...</p>",
+			end_type: 'button',
+			button_string: 'Continuer'
+		};	*/
+		
+		// main task
+		var task_block = {
+			type: "likert-rating",
+			stimuli: allstim.word,
+			check_point: allstim.check_point,
+			thr_check_min: 2,
+			thr_null_max: thr_null_max,
+			stop_msg: "<p>Oups ! Au vu de vos réponses, il semblerait que vous vous montriez peu impliqué dans cette expérience.</p><p>Toutes nos excuses si c'est une erreur de notre part !</p><p>Dans ce contexte de recueil de données en ligne, nous avons choisi de contrôler le bon suivi des instructions avant que vous ne puissiez accéder au tirage au sort pour la récompense...</p>" +
+			"<p>Merci de votre compréhension.</p>",
+			slider : slider_opt,
+			button: 'Valider',
+			timing_interstim: 0
+		};	
+		
+		// Instructions for sentence typing
+		var end_task = {
+			type: 'text',
+			title:  "Merci ! C'est presque fini !", 
+			text: "",
+			end_type: 'button',
+			button_string: "Continuer"
+		};				
+		
+		/*  Survey blocks */
+		/* Define in a separate function to gain in readability */
+		var form_blocks = define_form_blocks(); 
+		
+		/** Merci */
+		var merci = "<p class='large'> Merci pour votre participation ! Vous pouvez fermer cette fenêtre.</p>";
+					
+		
+		/**----------   WHOLE EXPERIMENT STRUCTURE **/
+		
+		var wd_blocks = [intro_a, intro_b, task_block, end_task];
+		
+		/** THE WHOLE EXPERIMENT STRUCTURE */
+		
+		var experiment = [];
+		
+		experiment.push(welcome_block);	
+		experiment.push(resize_block);	
+		experiment = experiment.concat(wd_blocks);	
+		experiment = experiment.concat(form_blocks);
+		
+		// subjID will be add in the database - based on the exact date when user was starting the experiment
+		var subjID = jsPsych.getSubjectID();
+		
+		/**------- STORE DATA TO MSQL DATABASE function */
+		// Function for writing the data in mysql database
+		// The database HAVE TO BE CONFIGURED
+		// ACCESS TO DATABASE IS DEFINED IN db / db_save.php 
+		function save_data(data){
+
+			return { 
+				type:'post',
+				cache: false,
+				url: 'db/db_save.php', 
+				data: {
+					json: JSON.stringify(data)
+				}
+			}
+		}
+		
+		/**-------- Function for the LUCKY DRAW */
+		// each Ngap participants, a subject is defined as a winner (Ngap, Ngap*2, Ngap*3...)		
+		function lucky_draw(){
+			return{   
+				type: 'get',
+				url: 'db/db_luckydraw.php', 
+				dataType: 'json',
+				success: function(data) { 
+					if (data.winflag == 1){
+						var luckres = "<p class='lucky'>Merci beaucoup d’avoir participé à cette expérience."+
+							"<p class='lucky'><b>Résultat du tirage au sort : vous avez gagné un bon d’achat de 25€ !</b></p>" +
+							"<p class='lucky'>Pour le récupérer, merci d'envoyer un mail à Nuria Gala, responsable de cette étude, à l'adresse :</p><p class='large red'> nuria.gala@univ-amu.fr</p><p>et en précisant le code : </p>" +
+							"<p class='large center-content red'><br>" + data.alphacode + "</br></p>" +
+							"<div class='fb_info'><p>Ce code est unique par gagnant. Il est tiré au sort parmi une liste "+
+							" prédéfinie.</p><p>La procédure utilisée garantit l'anonymat des données (aucun lien"+
+							" ne peut être établi entre les données de l'expérience et l'identité du gagnant).</p></div>"+
+							"<p>Vous pouvez fermer cette fenêtre quand vous le souhaitez.</p>";
+							$("body").html(luckres);
+					} else {
+						var luckres = "<p class='large'>Merci beaucoup d’avoir participé à cette expérience."+
+							"<p class='large'>Résultat du tirage : Vous n'avez pas gagné, dommage !</p>" +
+							"<p>Vous pouvez fermer cette fenêtre quand vous le souhaitez...</p>";	
+							$("body").html(luckres);			
+					}
+				},
+				error : function(resultat, statut, erreur){
+					console.log(resultat);
+					var luckres = "<p class='large'>Merci beaucoup d’avoir participé à cette expérience."+
+					"<p class='large'>Résultat du tirage : Vous n'avez pas gagné, dommage !</p>" +
+					"<p>Vous pouvez fermer cette fenêtre quand vous le souhaitez...</p>";	
+					$("body").html(luckres);	
+				}
+			}
+		}
+		function lucky_draw_demo(){
+			var luckres = "<p class='lucky'>(DEMO) Merci beaucoup d’avoir participé à cette expérience."+
+				"<p class='lucky'><b>Résultat du tirage au sort : vous avez gagné un bon d’achat de 25€ !</b></p>" +
+				"<p class='lucky'>Pour le récupérer, merci d'envoyer un mail à Nuria Gala, responsable de cette étude, à l'adresse : nuria.gala@univ-amu.fr, en précisant le code : </p>" +
+				"<p class='large center-content'><br>XXX-XXX</br></p>" +
+				"<div class='fb_info'>Ce code est unique par gagnant. Il est tiré au sort parmi une liste "+
+				" prédéfinie. La procédure utilisée garantit l'anonymat des données (aucun lien"+
+				" ne peut être établi entre les données de l'expérience et l'identité du gagnant).</div>"+
+				"<p>Vous pouvez fermer cette fenêtre quand vous le souhaitez...</p>";
+			$("body").html(luckres);
+		}	
+		/** GO ! Start the experiment */
+		jsPsych.init({
+			experiment_structure: experiment,
+			on_finish: function(){ 	
+				// Adding user's browser and OS infos (as a unique string)
+				var subjinfo = getBrowserInfos();
+				
+				// Save all the data in the database
+				if (!isdemo){					
+					// get all jsPsych data
+					var alldata = jsPsych.prepare_data();
+					alldata['info'] = {id: subjID, os_bro: subjinfo};
+
+					// Save 		
+					// $.ajaxQueue(save_data(alldata));
+		
+					// Check if subject is the winner of the day !!!
+					$.ajaxQueue(lucky_draw_demo());
+					// Add merci
+					//$("body").html(merci);
+				}
+				
+				// Display all data on the page (debug mode)
+				if (isdemo){ 
+					lucky_draw_demo();
+					//$("body").html(merci);
+					$("body").append("jspsych data :");
+					jsPsych.data.displayData();
+				}
+			}	
+		}); 
+	</script> 
+
+</html>

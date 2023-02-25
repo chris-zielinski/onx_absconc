@@ -1,0 +1,191 @@
+<!DOCTYPE html>   
+<!--
+**/-->
+<html>   
+	<head>  
+		<meta charset="utf-8" />
+		
+		<title>Abstrait--Concret</title>
+
+		<link rel="shortcut icon" href="img/layout/favicon.ico">	
+
+		<script src="js/jquery.js"></script>
+		
+		<!-- add informations on bottom section - infotxt is return -->
+		<script src="js/infos.js"></script>
+
+		<!-- add concent form -->
+		<script src="js/consent.js"></script>
+
+		<!-- force full screen -->
+		<script>
+			function openfullscreen(url) {
+				newwin = window.open("", "", "scrollbars")
+				newwin.moveTo(0, 0)
+				newwin.resizeTo(screen.width, screen.height)
+				newwin.location = url
+			}
+		</script>
+		
+		<!-- Main layout -->
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="shortcut icon" href="img/layout/favicon.ico"/>		
+	</head>
+	
+	<body>
+
+		<header>
+		<img class="hlogo" src="img/layout/absconc.png"/>
+			 <div id="catch">
+				<p>Participez à notre expérience en ligne</p>
+			</div>
+		</header>			
+			
+		<section class="mcol-section">
+			
+			<div class="col"> 
+				<p class="info-title shabox">Pourquoi ?</p> 
+				<p>Ce test est destiné à évaluer les résultats d'annotation automatique des noms abstraits et concrets. Votre participation va permettre de valider la mise en place d’une ressource lexicale dans le cadre de l’étude sur la simplification des textes. 
+				</p> 
+			</div>
+		
+			<div class="col"> 
+				<p class="info-title shabox">Comment ?</p>
+				<p>Cette expérience ne vous prendra que 5 minutes. Vous allez voir 124 mots. Votre but est de les annoter en concret ou abstrait. <b>Merci de participer seulement si votre langue maternelle est le français ou si vous avez un niveau au moins B2</b>.
+				</p>				
+			</div>
+			
+			<div class="col">
+				<p class="info-title shabox">Qui sommes-nous ?</p> 
+				<p>Cette étude est réalisée sous l'initiative de chercheurs d'<a target="_blank" href="https://www.univ-amu.fr/">Aix-Marseille Université</a> du <a target="_blank" href="http://www.lpl-aix.fr/">Laboratoire Parole et Langage</a> . Elle bénéficie du soutien de l’Agence Nationale de la Recherche et du <a target="_blank" href="http://blricrex.hypotheses.org/">Centre de Ressources pour l'Expérimentation</a> de l'<a target="_blank" href="https://www.ilcb.fr/">Institute of Language, Communication and the Brain</a>. 
+				</p>
+			</div>
+
+			<div class="cf"></div>
+			
+		</section>
+		
+		<section id="appat">
+			A la fin de cette expérience, vous gagnerez peut-être un bon d'achat de 25€ !
+		</section> 
+		
+		<section class="mcol-section">
+			
+			<div class="col"> 
+				<div id="contact">
+					<p>Des questions ?<br>Suivre l'avancée de l'étude ?<br>Contactez nous !<br> dariagoryachun (at) gmail.com</p>
+				</div> 
+			</div>
+
+			<div class="col"> 	
+				<div id="start"> 
+					<div id="no-start"></div>
+					<div class="start-ok">
+						<div id="subbut" class="form_subbutton">
+							<div id="startkey" class="button">
+								<span>Participer</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+
+
+			<div class="col">
+				<div id="banlogo">
+					<a target="_blank" href="https://www.univ-amu.fr/">
+						<img class="logo" src="img/layout/logo_amu.png" alt="Logo AMU" title="Vers le site d'Aix-Marseille Université" /></a>
+					<a target="_blank" href="http://www.lpl-aix.fr/">
+						<img class="logo" src="img/layout/logo_lpl.png" alt="Logo LNC" title="Vers le site du Laboratoire Parole et Langage" /></a>
+					<a target="_blank" href="https://www.ilcb.fr/">
+						<img class="logo" src="img/layout/logo_ilcb.png" alt="Logo BLRI" title="Vers le site de l'ILCB" /></a>
+				</div>
+			</div>
+
+			<div class="cf"></div>
+			
+			
+		</section>
+		<section class="mcol-section">
+			<div class="col">
+				<div id="more_info" class="more_info_disp">
+					<a id = "more_info_key" href="#" title="Mentions légales, anonymat...">
+						<p class="important dotted">Informations supplémentaires</p>
+					</a> 
+				</div>
+			</div>
+		</section>
+		<section id="info_legal">
+
+			<div id="info_container" style="display: none;">
+				<div id="info_div">
+				</div>
+			</div>
+			
+		</section>
+		
+		<section id="consent">			
+			<div id="consent_container" style="display: none;">
+				<div id="consent_div">
+					<div id="consent_text">
+						<div class="more_info_disp">Pour plus d'informations (anonymat, mentions légales...), cliquez <span class="important">ici</span>.</div>
+						 <div id="consent_button" style="visibility: hidden;"> 
+							
+								<!--<img id="okstart" src="img/layout/key_start.png" title="Ouvre l'expérience dans une nouvelle fenêtre"/>-->
+								<div id="subbut" class="form_subbutton">
+								<a id = "okstartlink" href="#" onclick="openfullscreen('ac_exp.html'); return false;">
+									<div id="submit" class="button">
+										<span>Commencer l'expérience</span>
+									</div>
+								</a> 
+								</div>
+
+						</div>
+
+					</div>
+
+				</div>	
+
+			</div>
+			
+		</section>
+						
+	</body>	
+	
+	<script>
+	
+		// Add More informations section
+		var infostr = "<h1><span id='title_info'>Informations</span><img src='img/layout/close_cross.png' id='crossClose'/></h1>";
+		infostr += "<div id='info_text'>" + info_txt + "</div>";
+	
+		$('#info_div').html(infostr);
+		
+		// Display the more_info div when click on it
+		$('.more_info_disp').click(function(){	
+			$("#info_container").fadeIn(500);
+			$("#crossClose").click(function(){$("#info_container").fadeOut(500)});				
+		});
+		
+
+		// Add consent section
+		var constit = "<h1><span id='title_consent'>Consentement de participation</span><img src='img/layout/close_cross.png' id='consentClose'/></h1>";
+		$('#consent_div').prepend(constit);
+		
+		$('#consent_text').prepend(consent_txt);
+		$('#consent-check').click(function(){
+			if ($(this).is(':checked')){
+				$('#consent_button').css('visibility', 'visible');
+			}else{
+				$('#consent_button').css('visibility', 'hidden');
+			}
+		});
+
+		// Display the consent_div div when click on start key
+		$('#startkey').click(function(){	
+			$("#consent_container").fadeIn(500);
+			$("#consentClose").click(function(){$("#consent_container").fadeOut(500)});				
+		});		
+
+	</script>
+
+</html>
