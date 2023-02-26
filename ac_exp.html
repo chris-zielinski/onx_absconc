@@ -20,7 +20,7 @@
 		<!-- tool to get OS/browser informations 
 		Work only when experiment is online (on a server)
 		Add the path of the WhichBrowser library inside the whichbro.js file -->
-		<script src="js/whichbro.js" defer></script> 
+		<!-- <script src="js/whichbro.js" defer></script>  -->
 		<!-- plugin for dispalying final survey -->
 		<script src="js/nouislider.min.js"></script>			
 		<!-- jsPsych core & plugings + CSS -->		
@@ -138,22 +138,7 @@
 			button_string: 'Commencer !'
 		};	
 	
-		/** Abstract/concrete rating task */
-		/*
-		var test_block = {
-			type: "likert-rating",
-			stimuli: filler_random,
-			slider : slider_opt,
-			button: 'Valider',
-			timing_interstim: 0
-		};	
-		var end_practice = {
-			type: 'text',
-			text: "<p class='feedback'>Bien ! Appuyer sur Continuer pour voir l'ensemble des mots...</p>",
-			end_type: 'button',
-			button_string: 'Continuer'
-		};	*/
-		
+		/** Abstract/concrete rating task */		
 		// main task
 		var task_block = {
 			type: "likert-rating",
@@ -267,7 +252,7 @@
 			experiment_structure: experiment,
 			on_finish: function(){ 	
 				// Adding user's browser and OS infos (as a unique string)
-				var subjinfo = getBrowserInfos();
+				var subjinfo = 'demo'; //getBrowserInfos();
 				
 				// Save all the data in the database
 				if (!isdemo){					
